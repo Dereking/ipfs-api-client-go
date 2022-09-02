@@ -7,18 +7,6 @@ import (
 
 /*
 /api/v0/files/chcid
-/api/v0/files/cp
-/api/v0/files/flush
-/api/v0/files/ls
-/api/v0/files/mkdir
-/api/v0/files/mv
-/api/v0/files/read
-/api/v0/files/rm
-/api/v0/files/stat
-/api/v0/files/write*/
-
-/*
-/api/v0/files/chcid
 Change the CID version or hash function of the root node of a given path.
 
 #Arguments
@@ -306,7 +294,7 @@ This endpoint returns a `text/plain` response body.
 curl -X POST -F file=@myfile "http://127.0.0.1:5001/api/v0/files/write?arg=<path>&offset=<value>&create=<value>&parents=<value>&truncate=<value>&count=<value>&raw-leaves=<value>&cid-version=<value>&hash=<value>"
 */
 
-func (c *IPFSClient) FilesWrit(filePath string, offset uint64,
+func (c *IPFSClient) FilesWrite(filePath string, offset uint64,
 	bAutoCreateFile, bAutoCreateParent, bTruncateBeforeWrite, bUseRawBlockForLeaves bool,
 	maxReadBytes uint64, cidVersion int, hash string, srcFilePaths []string) (res string, err error) {
 	//This endpoint returns a `text/plain` response body.

@@ -125,7 +125,10 @@ func (c *IPFSClient) Add(req *AddReq) (string, error) {
 		return "", errors.New("SrcFilePath :" + req.SrcFilePath + " not exists")
 	}
 
-	query, form := StructToHttpDataMap(*req)
+	query, form, err := StructToHttpDataMap(*req)
+	if err != nil {
+		return "", err
+	}
 
 	//log.Println("StructToHttpDataMap : add = ", query, form)
 
@@ -155,7 +158,10 @@ curl -X POST "http://127.0.0.1:5001/api/v0/cat?arg=<ipfs-path>&offset=<value>&le
 */
 
 func (c *IPFSClient) Cat(req *CatReq) (string, error) {
-	query, form := StructToHttpDataMap(*req)
+	query, form, err := StructToHttpDataMap(*req)
+	if err != nil {
+		return "", err
+	}
 
 	//log.Println(query, form)
 
@@ -164,8 +170,6 @@ func (c *IPFSClient) Cat(req *CatReq) (string, error) {
 		return "", err
 	}
 	return string(b), nil
-	//This endpoint returns a `text/plain` response body.
-	return "", nil
 }
 
 //api/v0/commands
@@ -209,7 +213,10 @@ curl -X POST "http://127.0.0.1:5001/api/v0/commands?flags=<value>"
 #
 */
 func (c *IPFSClient) Commands(req *CommandsReq) (*CommandsResp, error) {
-	query, form := StructToHttpDataMap(*req)
+	query, form, err := StructToHttpDataMap(*req)
+	if err != nil {
+		return nil, err
+	}
 
 	//log.Println(query, form)
 
@@ -283,31 +290,361 @@ curl -X POST "http://127.0.0.1:5001/api/v0/dht/query?arg=<peerID>&verbose=<value
 
 #
 */
-func (c *IPFSClient) DhtQuery(peerID string, bVerbose bool) (*DhtQueryResp, error) {
+func (c *IPFSClient) DhtQuery(peerID string, bVerbose bool) (string /*DhtQueryResp*/, error) {
 
 	b, err := PostUrl(c.Host + "/api/v0/dht/query?arg=" + peerID + "&verbose=" + strconv.FormatBool(bVerbose))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	//log.Println(string(b))
-	var ret DhtQueryResp
-	err = json.Unmarshal(b, &ret)
-	if err != nil {
-		return nil, err
-	}
-	return &ret, nil
+	return string(b), nil
+	// var ret DhtQueryResp
+	// err = json.Unmarshal(b, &ret)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//return &ret, nil
 }
 
 //api/v0/get
+/*Download IPFS objects.
+
+#Arguments
+arg [string]: The path to the IPFS object(s) to be outputted. Required: yes.
+output [string]: The path where the output should be stored. Required: no.
+archive [bool]: Output a TAR archive. Required: no.
+compress [bool]: Compress the output with GZIP compression. Required: no.
+compression-level [int]: The level of compression (1-9). Required: no.
+progress [bool]: Stream progress data. Default: true. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+This endpoint returns a `text/plain` response body.
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/get?arg=<ipfs-path>&output=<value>&archive=<value>&compress=<value>&compression-level=<value>&progress=true"
+*/
+func (c *IPFSClient) Get(req *GetReq) (string, error) {
+
+	req.TargetPath = "/tmp/q.tar"
+
+	query, form, err := StructToHttpDataMap(*req)
+	if err != nil {
+		return "", err
+	}
+
+	//log.Println(query, form)
+
+	b, err := PostForm(c.Host+"/api/v0/get", query, form)
+	if err != nil {
+		return "", err
+	}
+	//log.Println(b)
+	return string(b), nil
+}
+
 //api/v0/id
+/*Show IPFS node id info.
+
+#Arguments
+arg [string]: Peer.ID of node to look up. Required: no.
+format [string]: Optional output format. Required: no.
+peerid-base [string]: Encoding used for peer IDs: Can either be a multibase encoded CID or a base58btc encoded multihash. Takes {b58mh|base36|k|base32|b...}. Default: b58mh. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Addresses": [
+    "<string>"
+  ],
+  "AgentVersion": "<string>",
+  "ID": "<string>",
+  "ProtocolVersion": "<string>",
+  "Protocols": [
+    "<string>"
+  ],
+  "PublicKey": "<string>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/id?arg=<peerid>&format=<value>&peerid-base=b58mh"
+*/
+func (c *IPFSClient) Id() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/log/level
+/*Change the logging level.
+
+#Arguments
+arg [string]: The subsystem logging identifier. Use 'all' for all subsystems. Required: yes.
+arg [string]: The log level, with 'debug' the most verbose and 'fatal' the least verbose.
+One of: debug, info, warn, error, dpanic, panic, fatal.
+Required: yes.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Message": "<string>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/log/level?arg=<subsystem>&arg=<level>"
+*/
+func (c *IPFSClient) LogLevel() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/log/ls
+/*List the logging subsystems.
+
+#Arguments
+This endpoint takes no arguments.
+
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Strings": [
+    "<string>"
+  ]
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/log/ls"
+*/
+func (c *IPFSClient) LogLs() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/ls
+/*List directory contents for Unix filesystem objects.
+
+#Arguments
+arg [string]: The path to the IPFS object(s) to list links from. Required: yes.
+headers [bool]: Print table headers (Hash, Size, Name). Required: no.
+resolve-type [bool]: Resolve linked objects to find out their types. Default: true. Required: no.
+size [bool]: Resolve linked objects to find out their file size. Default: true. Required: no.
+stream [bool]: Enable experimental streaming of directory entries as they are traversed. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Objects": [
+    {
+      "Hash": "<string>",
+      "Links": [
+        {
+          "Hash": "<string>",
+          "Name": "<string>",
+          "Size": "<uint64>",
+          "Target": "<string>",
+          "Type": "<int32>"
+        }
+      ]
+    }
+  ]
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/ls?arg=<ipfs-path>&headers=<value>&resolve-type=true&size=true&stream=<value>"
+*/
+func (c *IPFSClient) Ls() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/ping
+/*Send echo request packets to IPFS hosts.
+
+#Arguments
+arg [string]: ID of peer to be pinged. Required: yes.
+count [int]: Number of ping messages to send. Default: 10. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Success": "<bool>",
+  "Text": "<string>",
+  "Time": "<duration-ns>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/ping?arg=<peer ID>&count=10"
+*/
+func (c *IPFSClient) Ping() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/refs
+/*List links (references) from an object.
+
+#Arguments
+arg [string]: Path to the object(s) to list refs from. Required: yes.
+format [string]: Emit edges with given format. Available tokens: <src> <dst> <linkname>. Default: <dst>. Default: <dst>. Required: no.
+edges [bool]: Emit edge format: &lt;from&gt; -&gt; &lt;to&gt;. Required: no.
+unique [bool]: Omit duplicate refs from output. Required: no.
+recursive [bool]: Recursively list links of child nodes. Required: no.
+max-depth [int]: Only for recursive refs, limits fetch and listing to the given depth. Default: -1. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Err": "<string>",
+  "Ref": "<string>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/refs?arg=<ipfs-path>&format=<dst>&edges=<value>&unique=<value>&recursive=<value>&max-depth=-1"
+*/
+func (c *IPFSClient) Refs() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/refs/local
+/*List all local references.
+
+#Arguments
+This endpoint takes no arguments.
+
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Err": "<string>",
+  "Ref": "<string>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/refs/local"
+*/
+func (c *IPFSClient) RefsLocal() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/resolve
+/*Resolve the value of names to IPFS.
+
+#Arguments
+arg [string]: The name to resolve. Required: yes.
+recursive [bool]: Resolve until the result is an IPFS name. Default: true. Required: no.
+dht-record-count [int]: Number of records to request for DHT resolution. Required: no.
+dht-timeout [string]: Max time to collect values during DHT resolution eg "30s". Pass 0 for no timeout. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Path": "<string>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/resolve?arg=<name>&recursive=true&dht-record-count=<value>&dht-timeout=<value>"
+*/
+func (c *IPFSClient) Resolve() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/shutdown
+/*Shut down the IPFS daemon.
+
+#Arguments
+This endpoint takes no arguments.
+
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+This endpoint returns a `text/plain` response body.
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/shutdown"
+*/
+func (c *IPFSClient) Shutdown() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/update
+/*Arguments
+arg [string]: Arguments for subcommand. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+This endpoint returns a `text/plain` response body.
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/update?arg=<args>"
+*/
+func (c *IPFSClient) Update() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/version
+/*Show IPFS version information.
+
+#Arguments
+number [bool]: Only show the version number. Required: no.
+commit [bool]: Show the commit hash. Required: no.
+repo [bool]: Show repo version. Required: no.
+all [bool]: Show all version information. Required: no.
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Commit": "<string>",
+  "Golang": "<string>",
+  "Repo": "<string>",
+  "System": "<string>",
+  "Version": "<string>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/version?number=<value>&commit=<value>&repo=<value>&all=<value>"
+*/
+func (c *IPFSClient) Version() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
 //api/v0/version/deps
+/*Shows information about dependencies used for build.
+
+#Arguments
+This endpoint takes no arguments.
+
+#Response
+On success, the call to this endpoint will return with 200 and the following body:
+
+{
+  "Path": "<string>",
+  "ReplacedBy": "<string>",
+  "Sum": "<string>",
+  "Version": "<string>"
+}
+
+#cURL Example
+curl -X POST "http://127.0.0.1:5001/api/v0/version/deps"
+*/
+func (c *IPFSClient) VersionDeps() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
+// - [ ]
+//   - [ ] /api/v0/log/tail
+func (c *IPFSClient) LogTail() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}
+
+//  Experimental RPC commands
+//  - [ ] /api/v0/mount
+
+func (c *IPFSClient) Mount() (res string, err error) {
+	err = errors.New("unimplement api")
+	return "", err
+}

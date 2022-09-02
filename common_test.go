@@ -13,12 +13,12 @@ func Test_StructToHttpData(t *testing.T) {
 	}{
 		`StructToHttpData(AddReq)`: {
 			req:       AddReq{SrcFilePath: "./test.txt", TargetPath: "/test.txt", HashAlgorithm: Sha2_256},
-			expectedQ: "&quiet=false&quieter=false&silent=false&progress=false&trickle=false&only-hash=false&wrap-with-directory=false&chunker=&pin=false&raw-leaves=false&nocopy=false&fscache=false&cid-version=0&inlhashine=sha2-256&inline=false&inline-limit=0",
+			expectedQ: "&chunker=&cid-version=0&fscache=false&inlhashine=sha2-256&inline=false&inline-limit=0&nocopy=false&only-hash=false&pin=false&progress=false&quiet=false&quieter=false&raw-leaves=false&silent=false&trickle=false&wrap-with-directory=false",
 			expectedF: "",
 		},
 		`CatReq`: {
 			req:       CatReq{IpfsPath: "sdferwedgfgf"},
-			expectedQ: "&arg=sdferwedgfgf&offset=0&length=0&progress=false",
+			expectedQ: "&arg=sdferwedgfgf&length=0&offset=0&progress=false",
 			expectedF: "",
 		},
 	}
@@ -26,7 +26,11 @@ func Test_StructToHttpData(t *testing.T) {
 		//fmt.Println(name, tt)
 		t.Run(name, func(t *testing.T) {
 			//	t.Log(name, tt)
-			q, f := StructToHttpData(tt.req)
+			q, f, err := StructToHttpData(tt.req)
+			if err != nil {
+				t.Errorf("StructToHttpData err: %s", err.Error())
+				return
+			}
 
 			if q != tt.expectedQ {
 				t.Errorf("got Q: %s, expected: %s", q, tt.expectedQ)

@@ -35,8 +35,7 @@ func Test_Cat(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 	t.Log("cat ", res, req)
-	assertEqual(t, res,
-		`{"Name":"test.txt","Hash":"QmUL7wDowvNk3y7KeEYFAATmz43727FwXKhBJJrqQu813a","Size":"11"}
+	assertEqual(t, res, `123
 `)
 
 }
@@ -63,10 +62,26 @@ func Test_DhtQuery(t *testing.T) {
 	client := NewIPFSClientLocal()
 	_, err := client.DhtQuery("12D3KooWJju1H2zf2iZZBD3Vq5E5mN2D8ipxomsKVLC3yQ3dDzvh", false)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatalf("Test_DhtQuery err: %s", err.Error())
 	}
 	//t.Log("Test_DhtQuery ", len(res) )
 	// assertEqual(t, res,
 	// 	`{"Name":"test.txt","Hash":"QmUL7wDowvNk3y7KeEYFAATmz43727FwXKhBJJrqQu813a","Size":"11"}
 	//`)
+}
+
+func Test_Gett(t *testing.T) {
+
+	req := NewGetReq()
+	req.IpfsPath = "QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R"
+
+	client := NewIPFSClientLocal()
+	res, err := client.Get(req)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	t.Log("cat ", res, req)
+	// assertEqual(t, res, `string=QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R0000644000000000000000000000000414304367170017241 0ustar0000000000000000123
+	//     `)
+
 }

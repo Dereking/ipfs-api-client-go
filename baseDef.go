@@ -95,21 +95,22 @@ func NewAddReq() *AddReq {
 type CatReq struct {
 
 	// arg [string]: The path to the IPFS object(s) to be outputted. Required: yes.
-	IpfsPath string `query:"arg"`
+	IpfsPath string `query:"arg" required:"true"`
 
 	// offset [int64]: Byte offset to begin reading from. Required: no.
-	ReadOffset int64 `query:"offset"`
+	ReadOffset int64 `query:"offset" required:"false"`
 
 	// length [int64]: Maximum number of bytes to read. Required: no.
-	MaxLength int64 `query:"length"`
+	MaxLength int64 `query:"length" required:"false"`
 
 	// progress [bool]: Stream progress data. Default: true. Required: no.
-	StreamProgress bool `query:"progress"`
+	StreamProgress bool `query:"progress"  required:"false"`
 }
 
 func NewCatReq() *CatReq {
 	return &CatReq{
 		StreamProgress: true,
+		MaxLength:      256144,
 	}
 }
 
@@ -169,5 +170,22 @@ type DhtQueryRespResponse struct {
 func NewDhtQueryResp() *DhtQueryResp {
 	return &DhtQueryResp{
 		Responses: make([]DhtQueryRespResponse, 0),
+	}
+}
+
+type GetReq struct {
+	IpfsPath         string `query:"arg" required:"true"`                // arg [string]: The path to the IPFS object(s) to be outputted. Required: yes.
+	TargetPath       string `query:"output" required:"false"`            // output [string]: The path where the output should be stored. Required: no.
+	IsTarFormat      bool   `query:"archive" required:"false"`           // archive [bool]: Output a TAR archive. Required: no.
+	IsCompress       bool   `query:"compress" required:"false"`          // compress [bool]: Compress the output with GZIP compression. Required: no.
+	IsCompressLevel  int    `query:"compression-level" required:"false"` // compression-level [int]: The level of compression (1-9). Required: no.
+	IsStreamProgress bool   `query:"progress" required:"false"`          // progress [bool]: Stream progress data. Default: true. Required: no.
+}
+
+func NewGetReq() *GetReq {
+	return &GetReq{
+		IpfsPath:        "",
+		IsCompress:      false,
+		IsCompressLevel: 9,
 	}
 }

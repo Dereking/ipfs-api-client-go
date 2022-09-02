@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -133,8 +132,8 @@ func PostForm(uri string, params, formData map[string]string) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Println(urlStr)
-	log.Println(body)
+	//log.Println(urlStr)
+	//log.Println(body)
 	// log.Println("request.Header")
 	// log.Println(writer.FormDataContentType())
 	// log.Println(request.Header)
@@ -184,12 +183,12 @@ func PostFormWithFile(uri string, params, formData map[string]string,
 		return nil, err
 	}
 
-	urlStr := uri + "?1=1"
+	urlStr := uri + "?"
 	for key, val := range params {
 		urlStr = urlStr + "&" + url.QueryEscape(key) + "=" + url.QueryEscape(val)
 	}
 
-	log.Println("urlstr:= ", urlStr)
+	//log.Println("urlstr:= ", urlStr)
 
 	request, err := http.NewRequest("POST", urlStr, body)
 	if err != nil {

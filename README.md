@@ -49,11 +49,11 @@ fmt.Log("add ", res)
 
 - [X] IPFSClient: Kubo RPC API client 
   - [x] /api/v0/add
-  - [ ] /api/v0/cat 
-  - [ ] /api/v0/commands
-  - [ ] /api/v0/commands/completion/bash
-  - [ ] /api/v0/dht/query  
-  - [ ] /api/v0/get
+  - [x] /api/v0/cat 
+  - [x] /api/v0/commands
+  - [x] /api/v0/commands/completion/bash
+  - [x] /api/v0/dht/query  
+  - [x] /api/v0/get
   - [ ] /api/v0/id
   - [ ] /api/v0/log/level
   - [ ] /api/v0/log/ls
