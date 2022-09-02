@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -38,7 +39,7 @@ func newFileUploadRequest(uri string, params, formData map[string]string,
 	}
 
 	urlStr := uri + "?1=1"
-	for key, val := range formData {
+	for key, val := range params {
 		urlStr = urlStr + "&" + url.QueryEscape(key) + "=" + url.QueryEscape(val)
 	}
 	request, err := http.NewRequest("POST", urlStr, body)
@@ -69,7 +70,7 @@ func newFormPostRequest(uri string, params, formData map[string]string) (*http.R
 	}
 
 	urlStr := uri + "?1=1"
-	for key, val := range formData {
+	for key, val := range params {
 		urlStr = urlStr + "&" + url.QueryEscape(key) + "=" + url.QueryEscape(val)
 	}
 	request, err := http.NewRequest("POST", urlStr, body)
@@ -86,6 +87,30 @@ func newFormPostRequest(uri string, params, formData map[string]string) (*http.R
 	return request, err
 }
 
+func PostUrl(uri string) ([]byte, error) {
+
+	body := &bytes.Buffer{}
+
+	request, err := http.NewRequest("POST", uri, body)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp *http.Response
+	resp, err = http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, err
+}
+
 func PostForm(uri string, params, formData map[string]string) ([]byte, error) {
 
 	body := &bytes.Buffer{}
@@ -100,7 +125,7 @@ func PostForm(uri string, params, formData map[string]string) ([]byte, error) {
 	}
 
 	urlStr := uri + "?1=1"
-	for key, val := range formData {
+	for key, val := range params {
 		urlStr = urlStr + "&" + url.QueryEscape(key) + "=" + url.QueryEscape(val)
 	}
 	request, err := http.NewRequest("POST", urlStr, body)
@@ -108,7 +133,8 @@ func PostForm(uri string, params, formData map[string]string) ([]byte, error) {
 		return nil, err
 	}
 
-	// log.Println(request)
+	log.Println(urlStr)
+	log.Println(body)
 	// log.Println("request.Header")
 	// log.Println(writer.FormDataContentType())
 	// log.Println(request.Header)
@@ -159,9 +185,12 @@ func PostFormWithFile(uri string, params, formData map[string]string,
 	}
 
 	urlStr := uri + "?1=1"
-	for key, val := range formData {
+	for key, val := range params {
 		urlStr = urlStr + "&" + url.QueryEscape(key) + "=" + url.QueryEscape(val)
 	}
+
+	log.Println("urlstr:= ", urlStr)
+
 	request, err := http.NewRequest("POST", urlStr, body)
 	if err != nil {
 		return nil, err

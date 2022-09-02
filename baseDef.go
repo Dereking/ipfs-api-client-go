@@ -3,14 +3,14 @@ package IPFSClient
 type TChunkSize string
 
 const (
-	ChunkSize131072   TChunkSize = "Size-131072"
-	ChunkSize262144              = "Size-262144"
-	ChunkSize524288              = "Size-524288"
-	ChunkSize1048576             = "Size-1048576"
-	ChunkSize2097152             = "Size-2097152"
-	ChunkSize4194304             = "Size-4194304"
-	ChunkSize8388608             = "Size-8388608"
-	ChunkSize16777216            = "Size-16777216"
+	ChunkSize131072   TChunkSize = "size-131072"
+	ChunkSize262144              = "size-262144"
+	ChunkSize524288              = "size-524288"
+	ChunkSize1048576             = "size-1048576"
+	ChunkSize2097152             = "size-2097152"
+	ChunkSize4194304             = "size-4194304"
+	ChunkSize8388608             = "size-8388608"
+	ChunkSize16777216            = "size-16777216"
 	ChunkRabinMin                = "rabin-min"
 	ChunkRabinAvg                = "rabin-avg"
 	ChunkRabinMax                = "rabin-max"
@@ -47,25 +47,24 @@ const (
 // inline [bool]: Inline small blocks into CIDs. (experimental). Required: no.
 // inline-limit [int]: Maximum block size to inline. (experimental). Default: 32. Required: no.
 type AddReq struct {
-	Quiet                 bool           //Write minimal output. Required: no.
-	Quieter               bool           //Write only final hash. Required: no.
-	Silent                bool           //Write no output. Required: no.
-	Progress              bool           //Stream progress data. Required: no.
-	TrickleDAGFormat      bool           //Use trickle-dag format for dag generation. Required: no.
-	OnlyHash              bool           //Only chunk and hash - do not write to disk. Required: no.
-	WapFilesWithDirectory bool           //Wrap files with a directory object. Required: no.
-	ChunkSize             TChunkSize     //Chunking algorithm, size-[bytes], rabin-[min]-[avg]-[max] or buzhash. Default: size-262144. Required: no.
-	Pin                   bool           //Pin this object when adding. Default: true. Required: no.
-	RawLeaves             bool           //Use raw blocks for leaf nodes. Required: no.
-	NoCopy                bool           //Add the file using filestore. Implies raw-leaves. (experimental). Required: no.
-	FsCache               bool           //Check the filestore for pre-existing blocks. (experimental). Required: no.
-	CidVersion            TCidVersion    // CID version. Defaults to 0 unless an option that depends on CIDv1 is passed. Passing version 1 will cause the raw-leaves option to default to true. Required: no.
-	HashAlgorithm         THashAlgorithm //Hash function to use. Implies CIDv1 if not sha2-256. (experimental). Default: sha2-256. Required: no.
-	Inline                bool           //Inline small blocks into CIDs. (experimental). Required: no.
-	InlineLimit           int            //: Maximum block size to inline. (experimental). Default: 32. Required: no.
-
-	TargetPath  string // ipfs path
-	SrcFilePath string //src file path to upload
+	Quiet                 bool           `query:"quiet"`               //
+	Quieter               bool           `query:"quieter"`             //
+	Silent                bool           `query:"silent"`              //
+	Progress              bool           `query:"progress"`            //
+	TrickleDAGFormat      bool           `query:"trickle"`             //
+	OnlyHash              bool           `query:"only-hash"`           //
+	WapFilesWithDirectory bool           `query:"wrap-with-directory"` //
+	ChunkSize             TChunkSize     `query:"chunker"`             //
+	Pin                   bool           `query:"pin"`                 //
+	RawLeaves             bool           `query:"raw-leaves"`          //
+	NoCopy                bool           `query:"nocopy"`              //
+	FsCache               bool           `query:"fscache"`             //
+	CidVersion            TCidVersion    `query:"cid-version"`         //
+	HashAlgorithm         THashAlgorithm `query:"inlhashine"`          //
+	Inline                bool           `query:"inline"`              //
+	InlineLimit           int            `query:"inline-limit"`        //
+	TargetPath            string         //
+	SrcFilePath           string         //
 }
 
 func NewAddReq() *AddReq {
@@ -89,5 +88,86 @@ func NewAddReq() *AddReq {
 
 		TargetPath:  "",
 		SrcFilePath: "",
+	}
+}
+
+//////////////////////
+type CatReq struct {
+
+	// arg [string]: The path to the IPFS object(s) to be outputted. Required: yes.
+	IpfsPath string `query:"arg"`
+
+	// offset [int64]: Byte offset to begin reading from. Required: no.
+	ReadOffset int64 `query:"offset"`
+
+	// length [int64]: Maximum number of bytes to read. Required: no.
+	MaxLength int64 `query:"length"`
+
+	// progress [bool]: Stream progress data. Default: true. Required: no.
+	StreamProgress bool `query:"progress"`
+}
+
+func NewCatReq() *CatReq {
+	return &CatReq{
+		StreamProgress: true,
+	}
+}
+
+///////////////////////////
+type CommandsReq struct {
+	ShowFlags bool `query:"flags"` //flags [bool]: Show command flags. Required: no.
+}
+
+type CommandsResp struct {
+	Name        string
+	Options     []CommandOption
+	Subcommands []Subcommand
+}
+
+type CommandOption struct {
+	Names []string
+}
+
+type Subcommand struct {
+	Name        string
+	Options     []CommandOption
+	Subcommands []Subcommand
+}
+
+func NewCommandsReq() *CommandsReq {
+	return &CommandsReq{
+		ShowFlags: true,
+	}
+}
+
+/*{
+  "Extra": "<string>",
+  "ID": "<peer-id>",
+  "Responses": [
+    {
+      "Addrs": [
+        "<multiaddr-string>"
+      ],
+      "ID": "peer-id"
+    }
+  ],
+  "Type": "<int>"
+}
+*/
+type DhtQueryResp struct {
+	Extra     string
+	ID        string
+	Responses []DhtQueryRespResponse
+	Type      int
+}
+
+type DhtQueryRespResponse struct {
+	Addrs []string //
+	ID    string   //
+}
+
+func NewDhtQueryResp() *DhtQueryResp {
+	return &DhtQueryResp{
+		Responses: make([]DhtQueryRespResponse, 0),
 	}
 }

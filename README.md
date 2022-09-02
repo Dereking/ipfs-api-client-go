@@ -1,11 +1,11 @@
 # ipfs-api-client-go
 
 #### 介绍
-本项目是 IPFS kubo HTTP RPC API 的客户端library，用golang实现。功能正在逐步完善中。已实现代码见下方列表，欢迎大家补充并提交代码
+本项目是 golang 实现的 IPFS （Kubo） HTTP RPC API 客户端library。功能正在逐步完善中。已实现代码见下方列表，欢迎大家补充并提交代码
 
-#### 安装教程
+#### 使用教程
 
-1.  引入library
+1.  引入 library
 ```go
 import （
     "github.com/Dereking/ipfs-api-client-go"
@@ -39,6 +39,11 @@ fmt.Log("add ", res)
 
   各模块示例代码可参考*_test.go
 
+
+
+#### 代码风格
+- 如果 api 参数超过 3 个，使用结构体定义，并用 NewXXX() 的方式指定默认值。
+- 
 
 #### 开发进度
 
