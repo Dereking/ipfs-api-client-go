@@ -53,15 +53,15 @@ fmt.Log("add ", res)
   - [x] /api/v0/commands
   - [x] /api/v0/commands/completion/bash
   - [x] /api/v0/dht/query  
-  - [x] /api/v0/get
-  - [ ] /api/v0/id
-  - [ ] /api/v0/log/level
-  - [ ] /api/v0/log/ls
-  - [ ] /api/v0/ls
-  - [ ] /api/v0/ping 
+  - [x] /api/v0/getx
+  - [x] /api/v0/id
+  - [x] /api/v0/log/level
+  - [x] /api/v0/log/ls
+  - [x] /api/v0/ls
+  - [ ] /api/v0/ping
   - [ ] /api/v0/refs
   - [ ] /api/v0/refs/local
-  - [ ] /api/v0/resolve 
+  - [ ] /api/v0/resolve
   - [ ] /api/v0/shutdown
   - [ ] /api/v0/update
   - [ ] /api/v0/version

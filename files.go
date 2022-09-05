@@ -5,6 +5,28 @@ import (
 	"strconv"
 )
 
+type FilesLsRes struct {
+	Entries []FilesLsResItem
+}
+
+type FilesLsResItem struct {
+	Hash string
+	Name string
+	Size int64
+	Type int
+}
+
+type FilesStatRes struct {
+	Blocks         int
+	CumulativeSize uint64
+	Hash           string
+	Local          bool
+	Size           uint64
+	SizeLocal      uint64
+	Type           string
+	WithLocality   bool
+}
+
 /*
 /api/v0/files/chcid
 Change the CID version or hash function of the root node of a given path.
@@ -24,11 +46,11 @@ curl -X POST "http://127.0.0.1:5001/api/v0/files/chcid?arg=<path>&cid-version=<v
 func (c *IPFSClient) FilesChCid(arg string, cidVersion int, hash string) (string, error) {
 	//This endpoint returns a `text/plain` response body.
 
-	query := make(map[string]string)
-	query["arg"] = arg
-	query["cid-version"] = strconv.FormatInt(int64(cidVersion), 10)
-	query["hash"] = hash
-	form := make(map[string]string)
+	query := make(map[string][]string)
+	query["arg"] = []string{arg}
+	query["cid-version"] = []string{strconv.FormatInt(int64(cidVersion), 10)}
+	query["hash"] = []string{hash}
+	form := make(map[string][]string)
 
 	b, err := PostForm("http://127.0.0.1:5001/api/v0/files/chcid", query, form)
 	if err != nil {
@@ -57,11 +79,11 @@ curl -X POST "http://127.0.0.1:5001/api/v0/files/cp?arg=<source>&arg=<dest>&pare
 func (c *IPFSClient) FilesCp(srcIPfsOrMFSPath string, targetMfsPath string, bMakeParents bool) (string, error) {
 	//This endpoint returns a `text/plain` response body.
 
-	query := make(map[string]string)
-	query["arg"] = srcIPfsOrMFSPath
-	query["arg"] = targetMfsPath
-	query["parents"] = strconv.FormatBool(bMakeParents)
-	form := make(map[string]string)
+	query := make(map[string][]string)
+	query["arg"] = []string{srcIPfsOrMFSPath}
+	query["arg"] = []string{targetMfsPath}
+	query["parents"] = []string{strconv.FormatBool(bMakeParents)}
+	form := make(map[string][]string)
 
 	b, err := PostForm("http://127.0.0.1:5001/api/v0/files/cp", query, form)
 	if err != nil {
@@ -121,8 +143,8 @@ curl -X POST "http://127.0.0.1:5001/api/v0/files/ls?arg=<path>&long=<value>&U=<v
 */
 func (c *IPFSClient) FilesLs(path string, bLongFormat, bSortInDirOrder bool) (res *FilesLsRes, err error) {
 
-	query := make(map[string]string)
-	form := make(map[string]string)
+	query := make(map[string][]string)
+	form := make(map[string][]string)
 
 	b, err := PostForm("http://127.0.0.1:5001/api/v0/files/ls", query, form)
 	if err != nil {

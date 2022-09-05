@@ -1,6 +1,7 @@
 package IPFSClient
 
 import (
+	"log"
 	"testing"
 )
 
@@ -17,9 +18,8 @@ func Test_Add(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 	//t.Log("add ", res, req)
-	assertEqual(t, res,
-		`{"Name":"test.txt","Hash":"QmUL7wDowvNk3y7KeEYFAATmz43727FwXKhBJJrqQu813a","Size":"11"}
-`)
+	assertEqual(t, res.Hash,
+		`QmUL7wDowvNk3y7KeEYFAATmz43727FwXKhBJJrqQu813a`)
 
 }
 
@@ -70,7 +70,7 @@ func Test_DhtQuery(t *testing.T) {
 	//`)
 }
 
-func Test_Gett(t *testing.T) {
+func Test_Get(t *testing.T) {
 
 	req := NewGetReq()
 	req.IpfsPath = "QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R"
@@ -85,3 +85,87 @@ func Test_Gett(t *testing.T) {
 	//     `)
 
 }
+
+func Test_Id(t *testing.T) {
+
+	req := NewIdReq()
+	//req.IpfsPath = "QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R"
+
+	client := NewIPFSClientLocal()
+	res, err := client.Id(req)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	t.Log("id ", res, req)
+	//log.Println("id ", res, req)
+	// assertEqual(t, res, `string=QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R0000644000000000000000000000000414304367170017241 0ustar0000000000000000123
+	//     `)
+
+}
+
+func Test_LogLevel(t *testing.T) {
+
+	req := NewLogLevelReq()
+	//req.IpfsPath = "QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R"
+
+	client := NewIPFSClientLocal()
+	res, err := client.LogLevel(req)
+	if err != nil {
+		t.Fatalf("LogLevel fail:" + err.Error())
+	}
+	//t.Log("id ", res, req)
+	log.Println("LogLevel ", res, req)
+	// assertEqual(t, res, `string=QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R0000644000000000000000000000000414304367170017241 0ustar0000000000000000123
+	//     `)
+
+}
+
+func Test_LogLs(t *testing.T) {
+
+	client := NewIPFSClientLocal()
+	res, err := client.LogLs()
+	if err != nil {
+		t.Fatalf("Test_LogLs fail:" + err.Error())
+	}
+	t.Log("logls ", res)
+	//log.Println("Test_LogLs ", res)
+	// assertEqual(t, res, `string=QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R0000644000000000000000000000000414304367170017241 0ustar0000000000000000123
+	//     `)
+
+}
+
+func Test_Ls(t *testing.T) {
+
+	req := NewLsReq()
+	req.IpfsPath = "QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R--"
+
+	client := NewIPFSClientLocal()
+	res, err := client.Ls(req)
+	if err != nil {
+		t.Fatalf("Ls fail:" + err.Error())
+	}
+	t.Log("ls ", res, req)
+	//log.Println("Ls ", res, req)
+	// assertEqual(t, res, `string=QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R0000644000000000000000000000000414304367170017241 0ustar0000000000000000123
+	//     `)
+
+}
+
+func Test_Ping(t *testing.T) {
+
+	req := NewPingReq("12D3KooWFS3Q9oZn5z3VnELmUoYr4qVDyEsNb75Wqnzumxwtkv8s")
+	//req.IpfsPath = "QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R--"
+
+	client := NewIPFSClientLocal()
+	res, err := client.Ping(req)
+	if err != nil {
+		t.Fatalf("Ls fail:" + err.Error())
+	}
+	t.Log("Ping ", res, req)
+	//log.Println("Ls ", res, req)
+	// assertEqual(t, res, `string=QmTEzo7FYzUCd5aq7bGKoMLfsbbsebpfARRZd4Znejb25R0000644000000000000000000000000414304367170017241 0ustar0000000000000000123
+	//     `)
+
+}
+
+

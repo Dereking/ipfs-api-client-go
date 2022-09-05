@@ -13,7 +13,7 @@ func Test_StructToHttpData(t *testing.T) {
 	}{
 		`StructToHttpData(AddReq)`: {
 			req:       AddReq{SrcFilePath: "./test.txt", TargetPath: "/test.txt", HashAlgorithm: Sha2_256},
-			expectedQ: "&chunker=&cid-version=0&fscache=false&inlhashine=sha2-256&inline=false&inline-limit=0&nocopy=false&only-hash=false&pin=false&progress=false&quiet=false&quieter=false&raw-leaves=false&silent=false&trickle=false&wrap-with-directory=false",
+			expectedQ: "&cid-version=0&fscache=false&inlhashine=sha2-256&inline=false&inline-limit=0&nocopy=false&only-hash=false&pin=false&progress=false&quiet=false&quieter=false&raw-leaves=false&silent=false&trickle=false&wrap-with-directory=false",
 			expectedF: "",
 		},
 		`CatReq`: {
